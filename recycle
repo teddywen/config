@@ -1,0 +1,31 @@
+#!/bin/sh
+
+RC_PATH=~/.recycler
+TIMESTAMP=`date +%s`
+
+if [ $# -eq 0 ]; then
+    exit 0
+fi
+
+if [ ! -d $RC_PATH ]; then
+    if [ -f $RC_PATH ]; then
+        echo "File confict: Couldn't create recycle bin because ($RC_PATH) is a regular file."
+        exit 1
+    else
+        mkdir $RC_PATH
+    fi
+fi
+mkdir $RC_PATH/$$
+mv $* $RC_PATH/$$
+
+file=`ls -a $RC_PATH/$$`
+for i in $file
+do
+    if [ $i != "." ] && [ $i != ".." ]; then
+        mv $RC_PATH/$$/$i $RC_PATH/$i.${TIMESTAMP}.$$
+        touch $RC_PATH/$i.${TIMESTAMP}.$$
+        fi
+done
+rmdir $RC_PATH/$$
+
+exit 0
